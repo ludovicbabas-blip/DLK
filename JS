@@ -23,42 +23,4 @@ if (!reduced) {
   heroEl.addEventListener('mouseleave', () => { vise(0, 0); glow.style.left = '50%'; glow.style.top = '44%'; });
 }
 
-/* ---- Le fil qui se dénoue (dessiné au scroll) ---- */
-const filScene = document.getElementById('filScene');
-const filPath = document.getElementById('filPath');
-const filAvant = document.getElementById('filAvant');
-const filApres = document.getElementById('filApres');
-const filL = filPath.getTotalLength();
-filPath.style.strokeDasharray = filL;
-filPath.style.strokeDashoffset = filL;
-const filReduit = matchMedia('(prefers-reduced-motion: reduce)').matches;
-if (filReduit) {
-  filPath.style.strokeDashoffset = 0;
-  filAvant.classList.add('vu');
-  filApres.classList.add('vu');
-} else {
-  let filRaf = null;
-  function majFil(){
-    filRaf = null;
-    const r = filScene.getBoundingClientRect(), vh = innerHeight;
-    let p = (vh * 0.9 - r.top) / (r.height + vh * 0.5);
-    p = Math.min(1, Math.max(0, p));
-    filPath.style.strokeDashoffset = filL * (1 - p);
-    filAvant.classList.toggle('vu', p > 0.06);
-    filApres.classList.toggle('vu', p > 0.82);
-  }
-  addEventListener('scroll', () => { if (!filRaf) filRaf = requestAnimationFrame(majFil); }, {passive:true});
-  majFil();
-}
 
-/* ---- La question : oui / pas encore ---- */
-document.getElementById('btnPasEncore').addEventListener('click', function(){
-  const bloc = document.getElementById('cqEcoute');
-  bloc.hidden = false;
-  requestAnimationFrame(() => bloc.classList.add('show'));
-  this.disabled = true; this.style.opacity = .4;
-});
-document.getElementById('btnEcouter').addEventListener('click', () => {
-  const intention = document.getElementById('intention');
-  if (intention && !intention.value) intention.value = "Je viens d'abord écouter.";
-});
