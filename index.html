@@ -373,7 +373,7 @@ footer{background:var(--indigo);color:rgba(255,255,255,.78);padding:64px clamp(2
             <stop offset="100%" stop-color="#0B7B3E"/>
           </linearGradient>
         </defs>
-        <path id="filPath" fill="none" stroke="url(#gradFil)" stroke-width="5" stroke-linecap="round"
+        <path id="filPath" fill="none" stroke="url(#gradFil)" stroke-width="7" stroke-linecap="round"
           d="M 70 215
              C 70 135, 185 130, 188 210
              C 191 288, 95 292, 98 214
@@ -383,8 +383,10 @@ footer{background:var(--indigo);color:rgba(255,255,255,.78);padding:64px clamp(2
              C 326 256, 378 252, 428 226
              C 494 192, 546 256, 616 226
              C 692 194, 754 228, 824 200
-             C 918 166, 1008 136, 1088 106
-             C 1122 94, 1146 88, 1160 82"/>
+             C 918 166, 1008 136, 1088 100
+             C 1122 86, 1146 76, 1162 66"/>
+        <circle id="filTipHalo" r="16" fill="#0B7B3E" opacity="0"/>
+        <circle id="filTip" r="7" fill="#0B7B3E" opacity="0"/>
       </svg>
       <p class="fil-txt fil-avant" id="filAvant">Ce que tu portes<span>Une parole gardée en dedans. Un nœud serré, seul.</span></p>
       <p class="fil-txt fil-apres" id="filApres">Ce que tu emportes<span>Un cap clair. Un fil qui se dénoue, ensemble.</span></p>
@@ -404,6 +406,80 @@ footer{background:var(--indigo);color:rgba(255,255,255,.78);padding:64px clamp(2
       </div>
     </div>
   </div>
+
+  <script>
+  (function(){
+    var scene = document.getElementById('filScene');
+    var path = document.getElementById('filPath');
+    var tip = document.getElementById('filTip');
+    var halo = document.getElementById('filTipHalo');
+    var txtA = document.getElementById('filAvant');
+    var txtB = document.getElementById('filApres');
+    if (!scene || !path) return;
+
+    var L = path.getTotalLength();
+    path.style.strokeDasharray = L + ' ' + L;
+    path.style.strokeDashoffset = L;
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      path.style.strokeDashoffset = 0;
+      txtA.classList.add('vu'); txtB.classList.add('vu');
+      return;
+    }
+
+    var cible = 0, actuel = 0, rafFil = null;
+
+    function calculeCible(){
+      var r = scene.getBoundingClientRect();
+      var vh = window.innerHeight;
+      var p = (vh * 0.88 - r.top) / (r.height + vh * 0.35);
+      cible = Math.max(0, Math.min(1, p));
+      if (!rafFil) rafFil = requestAnimationFrame(anime);
+    }
+
+    function anime(){
+      rafFil = null;
+      actuel += (cible - actuel) * 0.075;
+      if (Math.abs(cible - actuel) < 0.001) actuel = cible;
+
+      path.style.strokeDashoffset = L * (1 - actuel);
+
+      if (actuel > 0.01) {
+        var pt = path.getPointAtLength(L * actuel);
+        tip.setAttribute('cx', pt.x); tip.setAttribute('cy', pt.y);
+        halo.setAttribute('cx', pt.x); halo.setAttribute('cy', pt.y);
+        var vis = actuel < 0.995 ? 1 : 0;
+        tip.setAttribute('opacity', vis);
+        halo.setAttribute('opacity', vis * 0.25);
+      } else {
+        tip.setAttribute('opacity', 0);
+        halo.setAttribute('opacity', 0);
+      }
+
+      txtA.classList.toggle('vu', actuel > 0.06);
+      txtB.classList.toggle('vu', actuel > 0.8);
+
+      if (actuel !== cible) rafFil = requestAnimationFrame(anime);
+    }
+
+    window.addEventListener('scroll', calculeCible, {passive:true});
+    window.addEventListener('resize', calculeCible, {passive:true});
+    calculeCible();
+
+    var btnNon = document.getElementById('btnPasEncore');
+    if (btnNon) btnNon.addEventListener('click', function(){
+      var bloc = document.getElementById('cqEcoute');
+      bloc.hidden = false;
+      requestAnimationFrame(function(){ bloc.classList.add('show'); });
+      this.disabled = true; this.style.opacity = .4;
+    });
+    var btnEc = document.getElementById('btnEcouter');
+    if (btnEc) btnEc.addEventListener('click', function(){
+      var intention = document.getElementById('intention');
+      if (intention && !intention.value) intention.value = "Je viens d'abord écouter.";
+    });
+  })();
+  </script>
 </section>
 
 <!-- ============ CARTE INTERACTIVE ============ -->
