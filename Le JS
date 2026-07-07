@@ -1,0 +1,24 @@
+const title = document.getElementById('title3d');
+const heroEl = document.querySelector('.hero');
+const glow = document.getElementById('heroGlow');
+const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (!reduced) {
+  let tx = 0, ty = 0, cx = 0, cy = 0, raf = null;
+  function tick(){
+    cx += (tx - cx) * .1;
+    cy += (ty - cy) * .1;
+    title.style.transform = `rotateY(${cx.toFixed(2)}deg) rotateX(${cy.toFixed(2)}deg) translateZ(16px)`;
+    if (Math.abs(tx - cx) > .02 || Math.abs(ty - cy) > .02) raf = requestAnimationFrame(tick);
+    else raf = null;
+  }
+  function vise(x, y){ tx = x; ty = y; if (!raf) raf = requestAnimationFrame(tick); }
+  heroEl.addEventListener('mousemove', e => {
+    const r = heroEl.getBoundingClientRect();
+    const x = (e.clientX - r.left) / r.width - .5;
+    const y = (e.clientY - r.top) / r.height - .5;
+    vise(x * 12, -y * 9);
+    glow.style.left = (50 + x * 12) + '%';
+    glow.style.top = (44 + y * 10) + '%';
+  });
+  heroEl.addEventListener('mouseleave', () => { vise(0, 0); glow.style.left = '50%'; glow.style.top = '44%'; });
+}
