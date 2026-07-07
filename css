@@ -40,7 +40,6 @@
 
 
 /* ---------- LE CHEMIN : LE FIL QUI SE DÉNOUE ---------- */
-/* ---------- LE CHEMIN : LE FIL QUI SE DÉNOUE ---------- */
 #chemin{background:linear-gradient(180deg,#FBFDF9 0%,#EDF5EF 100%);position:relative;overflow:hidden}
 #chemin .eyebrow{color:var(--green)}
 #chemin h2{color:var(--indigo)}
@@ -70,6 +69,4 @@
   padding:15px 34px;cursor:pointer;transition:border-color .25s,color .25s,transform .25s,background .25s}
 .cq-non:hover{background:rgba(42,43,106,.06);transform:translateY(-2px)}
 .cq-ecoute{max-width:520px;margin:30px auto 0;opacity:0;transform:translateY(14px);
-  transition:opacity .6s ease,transform .6s ease}
-.cq-ecoute.show{opacity:1;transform:none}
-.cq-ecoute p{color:var(--gris);font-size:1.02rem;margin-bottom:20px}
+  transition:opacity .6s ease,transform
